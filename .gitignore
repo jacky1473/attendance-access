@@ -1,0 +1,32 @@
+# Credentials & Secrets (CRITICAL: Never commit credentials)
+easyWDMS.txt
+gitcreds.txt
+gitcreds
+*.key
+*.pem
+.env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Exported attendance files & logs
+*.xlsx
+*.csv
+/tmp/easywdms_exports/
+*.log
+
+# OS & Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

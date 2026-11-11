@@ -1,0 +1,5 @@
+# easyWDMS Server Credentials
+# Rename this file to easyWDMS.txt and fill in your actual credentials
+
+username = your_username
+password = your_password

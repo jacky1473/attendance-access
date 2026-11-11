@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>easyWDMS - Attendance In & Out Portal (MAIN & MAIN 2)</title>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3 & FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      
+      --brand-primary: #1e3a8a;
+      --brand-primary-dark: #0f172a;
+      --brand-accent: #2563eb;
+      --brand-gradient: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+      
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      
+      --color-success: #10b981;
+      --color-success-bg: #ecfdf5;
+      --color-success-border: #a7f3d0;
+      --color-success-text: #065f46;
+      
+      --color-warning: #f59e0b;
+      --color-warning-bg: #fffbeb;
+      --color-warning-border: #fde68a;
+      --color-warning-text: #92400e;
+      
+      --color-danger: #ef4444;
+      --color-danger-bg: #fef2f2;
+      --color-danger-border: #fecaca;
+      --color-danger-text: #991b1b;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    [data-bs-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-surface: #131b2e;
+      --bg-subtle: #1e293b;
+      --border-subtle: #243049;
+      --border-strong: #334155;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      
+      --color-success-bg: rgba(16, 185, 129, 0.15);
+      --color-success-border: rgba(16, 185, 129, 0.3);
+      --color-success-text: #34d399;
+      
+      --color-warning-bg: rgba(245, 158, 11, 0.15);
+      --color-warning-border: rgba(245, 158, 11, 0.3);
+      --color-warning-text: #fbbf24;
+      
+      --color-danger-bg: rgba(239, 68, 68, 0.15);
+      --color-danger-border: rgba(239, 68, 68, 0.3);
+      --color-danger-text: #f87171;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+      --shadow-lg: 0 12px 24px rgba(0,0,0,0.6);
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Navbar */
+    .app-navbar {
+      background: var(--brand-gradient);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.25);
+      padding: 0.75rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .brand-logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #60a5fa;
+      font-size: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: #10b981;
+      display: inline-block;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-ring 2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Cards */
+    .app-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .app-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .app-card-header {
+      background: transparent;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.9rem 1.15rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Stat Cards */
+    .stat-card-modern {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--brand-accent);
+    }
+
+    .stat-card-modern.active-filter {
+      border-color: var(--brand-accent);
+      box-shadow: 0 0 0 2px var(--brand-accent);
+    }
+
+    .stat-card-modern::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-top-left-radius: var(--radius-md);
+      border-bottom-left-radius: var(--radius-md);
+    }
+
+    .stat-card-records::before { background: #3b82f6; }
+    .stat-card-present::before { background: #10b981; }
+    .stat-card-single::before { background: #f59e0b; }
+    .stat-card-employees::before { background: #8b5cf6; }
+
+    .stat-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    /* Buttons */
+    .btn-brand {
+      background-color: var(--brand-accent);
+      border-color: var(--brand-accent);
+      color: #ffffff;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-brand:hover {
+      background-color: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-excel {
+      background-color: #059669;
+      border-color: #059669;
+      color: #ffffff;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-excel:hover {
+      background-color: #047857;
+      border-color: #047857;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+
+    /* Employee Picker Custom List */
+    .emp-list-container {
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      scrollbar-width: thin;
+    }
+
+    .emp-list-item {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background-color 0.15s ease;
+    }
+
+    .emp-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .emp-list-item:hover {
+      background-color: var(--bg-subtle);
+    }
+
+    .emp-list-item.selected {
+      background-color: rgba(37, 99, 235, 0.1);
+      border-left: 3px solid var(--brand-accent);
+    }
+
+    .emp-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--brand-gradient);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Filter Chips */
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      font-weight: 500;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .filter-chip:hover {
+      border-color: var(--brand-accent);
+      color: var(--brand-accent);
+    }
+
+    .filter-chip.active {
+      background: var(--brand-accent);
+      border-color: var(--brand-accent);
+      color: #ffffff;
+    }
+
+    .filter-chip.active .badge {
+      background: rgba(255, 255, 255, 0.25) !important;
+      color: #ffffff !important;
+    }
+
+    /* Badges */
+    .badge-terminal {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-main1 {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .badge-main2 {
+      background-color: #ede9fe;
+      color: #5b21b6;
+      border: 1px solid #ddd6fe;
+    }
+
+    .badge-telesales {
+      background-color: #ccfbf1;
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+    }
+
+    .badge-ceased {
+      background-color: #ffe4e6;
+      color: #be123c;
+      border: 1px solid #fecdd3;
+    }
+
+    [data-bs-theme="dark"] .badge-main1 {
+      background-color: rgba(30, 64, 175, 0.3);
+      color: #93c5fd;
+      border-color: rgba(30, 64, 175, 0.5);
+    }
+
+    [data-bs-theme="dark"] .badge-main2 {
+      background-color: rgba(91, 33, 182, 0.3);
+      color: #c4b5fd;
+      border-color: rgba(91, 33, 182, 0.5);
+    }
+
+    [data-bs-theme="dark"] .badge-telesales {
+      background-color: rgba(15, 118, 110, 0.3);
+      color: #5eead4;
+      border-color: rgba(15, 118, 110, 0.5);
+    }
+
+    [data-bs-theme="dark"] .badge-ceased {
+      background-color: rgba(190, 18, 60, 0.3);
+      color: #fda4af;
+      border-color: rgba(190, 18, 60, 0.5);
+    }
+
+    .area-chip-checkbox {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--bg-surface);
+      user-select: none;
+    }
+
+    .area-chip-checkbox:hover {
+      border-color: var(--brand-accent);
+      background-color: var(--bg-subtle);
+    }
+
+    .area-chip-checkbox.selected {
+      border-color: var(--brand-accent);
+      background-color: rgba(37, 99, 235, 0.08);
+    }
+
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-present {
+      background-color: var(--color-success-bg);
+      color: var(--color-success-text);
+      border: 1px solid var(--color-success-border);
+    }
+
+    .status-single {
+      background-color: var(--color-warning-bg);
+      color: var(--color-warning-text);
+      border: 1px solid var(--color-warning-border);
+    }
+
+    .status-absent {
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger-text);
+      border: 1px solid var(--color-danger-border);
+    }
+
+    .status-weekend {
+      background-color: var(--bg-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Table Styles */
+    .table-responsive-custom {
+      max-height: 620px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .table-modern {
+      margin-bottom: 0;
+      color: var(--text-main);
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table-modern thead th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-subtle) !important;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border-strong);
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .table-modern thead th:hover {
+      color: var(--brand-accent);
+    }
+
+    .table-modern tbody tr {
+      transition: background-color 0.15s ease;
+    }
+
+    .table-modern tbody tr:hover {
+      background-color: rgba(37, 99, 235, 0.04);
+    }
+
+    .table-modern tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+
+    .time-cell {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .time-in { color: #059669; }
+    .time-out { color: #2563eb; }
+    [data-bs-theme="dark"] .time-in { color: #34d399; }
+    [data-bs-theme="dark"] .time-out { color: #60a5fa; }
+
+    /* Mobile Cards View */
+    .attendance-card-mobile {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .attendance-card-mobile:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--brand-accent);
+    }
+
+    .punch-pill-box {
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Toast Notification */
+    .app-toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+    }
+
+    .app-toast {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      animation: slide-up 0.25s ease-out;
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Print Stylesheet */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 10pt;
+      }
+      .app-navbar, .filter-card-col, .results-header-actions, .pagination-container, .quick-filter-strip, .stat-card-modern, #mobileBottomBar {
+        display: none !important;
+      }
+      .results-card-col {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+      }
+      .app-card {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .table-responsive-custom {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .table-modern thead th {
+        background: #eee !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+      }
+      .table-modern tbody td {
+        border-bottom: 1px solid #ddd !important;
+      }
+    }
+
+    /* Mobile bottom floating bar */
+    .mobile-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 8px;
+      z-index: 1010;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
+    }
+
+    @media (max-width: 991.98px) {
+      body {
+        padding-bottom: 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <nav class="app-navbar">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="d-flex align-items-center justify-content-between">
+        
+        <!-- Brand Info -->
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-logo-icon">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-white fw-bold fs-6">easyWDMS</span>
+              <span class="badge bg-white bg-opacity-20 text-white border border-white border-opacity-25" style="font-size: 11px;" id="navMachineBadge">
+                Multi-Area Biometric
+              </span>
+            </div>
+            <div class="text-white text-opacity-75 small" style="font-size: 12px;">
+              Biometric Attendance &amp; In-Out Dashboard
+            </div>
+          </div>
+        </div>
+
+        <!-- Center / Right Status & Quick Actions -->
+        <div class="d-flex align-items-center gap-2 gap-sm-3">
+          
+          <!-- Live Server Status Badge -->
+          <div class="d-none d-md-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-pill text-white small" id="navStatusBadge">
+            <span class="live-dot" id="navLiveDot"></span>
+            <span class="fw-semibold" id="navCompany">CMSAE NEW</span>
+            <span class="text-white-50">|</span>
+            <span class="font-monospace text-white-50 small">122.176.49.74:8082</span>
+          </div>
+
+          <!-- Quick 1-Click Today's Attendance -->
+          <button class="btn btn-sm btn-light d-flex align-items-center gap-1 shadow-sm px-2 px-sm-3 fw-medium" onclick="quickTodayAttendance()" title="Instant Today's Punches">
+            <i class="fa-solid fa-bolt text-warning"></i>
+            <span class="d-none d-sm-inline">Today's Live</span>
+          </button>
+
+          <!-- Dark/Light Mode Switcher -->
+          <button class="btn btn-sm btn-outline-light rounded-circle" style="width: 34px; height: 34px; padding: 0;" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+          <!-- Mobile Filter Drawer Toggle Button (Visible only on mobile/tablet < 992px) -->
+          <button class="btn btn-sm btn-outline-light d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileFilterDrawer" aria-controls="mobileFilterDrawer" title="Open Filters">
+            <i class="fa-solid fa-sliders me-1"></i> Filters
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Application Body -->
+  <main class="container-fluid px-3 px-lg-4 py-3 flex-grow-1">
+
+    <!-- Information / Announcement Strip -->
+    <div class="app-card mb-3 py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: rgba(37, 99, 235, 0.05); border-color: rgba(37, 99, 235, 0.2);">
+      <div class="d-flex align-items-center gap-2 flex-wrap text-muted small">
+        <span><i class="fa-solid fa-shield-halved text-primary me-1"></i><b>Active Devices:</b> <span id="bannerActiveMachines"><span class="badge badge-terminal badge-main1"><i class="fa-solid fa-fingerprint"></i> MAIN1</span> <span class="badge badge-terminal badge-main2"><i class="fa-solid fa-fingerprint"></i> MAIN 2</span></span></span>
+        <span class="d-none d-md-inline text-muted">•</span>
+        <span><i class="fa-solid fa-clock-rotate-left text-success me-1"></i><b>Attendance:</b> Clean First-IN &amp; Last-OUT punches (Morning Shift)</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-1 px-2">
+          <i class="fa-solid fa-circle-check me-1"></i> Live API Connected
+        </span>
+      </div>
+    </div>
+
+    <div class="row g-3">
+
+      <!-- ==================================================== -->
+      <!-- LEFT COLUMN: Filters (Desktop View)                  -->
+      <!-- ==================================================== -->
+      <div class="col-lg-4 col-xl-3 d-none d-lg-block filter-card-col">
+        <div class="app-card sticky-top" style="top: 80px; z-index: 1000;">
+          <div class="app-card-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-sliders text-primary"></i>
+              <span class="fw-semibold">Report Parameters</span>
+            </div>
+            <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" onclick="resetFilters()" title="Reset Filters">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+          
+          <div class="p-3" id="desktopFilterContainer">
+            <!-- Filter Form Content placed here -->
+            <div id="filterFormContent">
+
+              <!-- 1. Employee Selection Mode -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small text-muted text-uppercase d-flex align-items-center justify-content-between">
+                  <span>1. Employee Mode</span>
+                </label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" name="empMode" id="modeSingle" value="single" checked onchange="toggleEmpMode()">
+                  <label class="btn btn-outline-primary btn-sm py-2" for="modeSingle">
+                    <i class="fa-solid fa-user me-1"></i> Single Employee
+                  </label>
+                  <input type="radio" class="btn-check" name="empMode" id="modeAll" value="all" onchange="toggleEmpMode()">
+                  <label class="btn btn-outline-primary btn-sm py-2" for="modeAll">
+                    <i class="fa-solid fa-users me-1"></i> All Employees
+                  </label>
+                </div>
+              </div>
+
+              <!-- Single Employee Autocomplete Box -->
+              <div id="singleEmpContainer" class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label for="empSearch" class="form-label small fw-semibold mb-0">Select Employee</label>
+                  <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="loadEmployees(true)" title="Force Sync from easyWDMS">
+                    <i class="fa-solid fa-arrows-rotate me-1"></i>Sync
+                  </button>
+                </div>
+
+                <div class="input-group input-group-sm mb-2">
+                  <span class="input-group-text bg-transparent"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                  <input type="text" id="empSearch" class="form-control" placeholder="Search name or ID..." oninput="filterEmployeeList()">
+                  <button class="btn btn-outline-secondary" type="button" onclick="clearEmpSearch()" title="Clear">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+
+                <!-- Custom Employee Scroll List -->
+                <div class="emp-list-container" id="empListContainer">
+                  <div class="p-3 text-center text-muted small">
+                    <i class="fa-solid fa-spinner fa-spin me-1"></i> Loading employee directory...
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <small class="text-muted" id="empCountText">0 employees</small>
+                  <small class="text-primary fw-semibold" id="selectedEmpText">None selected</small>
+                </div>
+              </div>
+
+              <!-- 2. Date Filter Mode -->
+              <div class="mb-3">
+                <label class="form-label fw-bold small text-muted text-uppercase">2. Date Filter</label>
+                
+                <!-- Preset Quick Chips -->
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setPresetDate('today')">Today</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setPresetDate('yesterday')">Yesterday</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setPresetDate('last7')">Last 7 Days</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setPresetDate('thisMonth')">This Month</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setPresetDate('lastMonth')">Last Month</button>
+                </div>
+
+                <!-- Navigation Tabs: Month vs Range -->
+                <ul class="nav nav-pills nav-fill mb-2" id="dateTabs" role="tablist">
+                  <li class="nav-item">
+                    <button class="nav-link active py-1 small" id="month-tab" data-bs-toggle="pill" data-bs-target="#tabMonth" type="button">
+                      <i class="fa-regular fa-calendar-days me-1"></i> Month
+                    </button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link py-1 small" id="range-tab" data-bs-toggle="pill" data-bs-target="#tabRange" type="button">
+                      <i class="fa-solid fa-calendar-week me-1"></i> Date Range
+                    </button>
+                  </li>
+                </ul>
+
+                <div class="tab-content" id="dateTabContent">
+                  <!-- Month Tab -->
+                  <div class="tab-pane fade show active" id="tabMonth" role="tabpanel">
+                    <div class="input-group input-group-sm">
+                      <input type="month" id="monthInput" class="form-control">
+                      <button class="btn btn-outline-secondary" type="button" onclick="stepMonth(-1)" title="Previous Month">
+                        <i class="fa-solid fa-chevron-left"></i>
+                      </button>
+                      <button class="btn btn-outline-secondary" type="button" onclick="stepMonth(1)" title="Next Month">
+                        <i class="fa-solid fa-chevron-right"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Date Range Tab -->
+                  <div class="tab-pane fade" id="tabRange" role="tabpanel">
+                    <div class="row g-2">
+                      <div class="col-6">
+                        <label for="fromDateInput" class="form-label small text-muted mb-0" style="font-size: 11px;">From</label>
+                        <input type="date" id="fromDateInput" class="form-control form-control-sm">
+                      </div>
+                      <div class="col-6">
+                        <label for="toDateInput" class="form-label small text-muted mb-0" style="font-size: 11px;">To</label>
+                        <input type="date" id="toDateInput" class="form-control form-control-sm">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Area / Biometric Machines Selection -->
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label fw-bold small text-muted text-uppercase mb-0">3. Area / Machines</label>
+                  <small class="text-primary fw-semibold" id="areaSelectedCount">2 of 4 selected</small>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setAreaPreset('main')">MAIN Only</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setAreaPreset('all')">All Machines</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setAreaPreset('telesales')">Telesales</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setAreaPreset('ceased')">Ceased</button>
+                </div>
+
+                <!-- Area Selection Checkboxes -->
+                <div class="d-flex flex-column gap-1" id="areaCheckboxList">
+                  <!-- MAIN1 -->
+                  <div class="area-chip-checkbox selected" id="areaCheck_MAIN1" onclick="toggleAreaSelection('MAIN1')">
+                    <div class="d-flex align-items-center gap-2">
+                      <input class="form-check-input mt-0" type="checkbox" id="chk_MAIN1" value="MAIN1" checked onclick="event.stopPropagation(); toggleAreaSelection('MAIN1');">
+                      <span class="badge badge-terminal badge-main1"><i class="fa-solid fa-fingerprint"></i> MAIN1</span>
+                      <span class="small fw-semibold">MAIN 1</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 10.5px;">192.168.12.223</span>
+                  </div>
+
+                  <!-- MAIN 2 -->
+                  <div class="area-chip-checkbox selected" id="areaCheck_MAIN2" onclick="toggleAreaSelection('MAIN 2')">
+                    <div class="d-flex align-items-center gap-2">
+                      <input class="form-check-input mt-0" type="checkbox" id="chk_MAIN2" value="MAIN 2" checked onclick="event.stopPropagation(); toggleAreaSelection('MAIN 2');">
+                      <span class="badge badge-terminal badge-main2"><i class="fa-solid fa-fingerprint"></i> MAIN 2</span>
+                      <span class="small fw-semibold">MAIN 2</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 10.5px;">192.168.12.222</span>
+                  </div>
+
+                  <!-- E & TELESALES -->
+                  <div class="area-chip-checkbox" id="areaCheck_TELESALES" onclick="toggleAreaSelection('E & TELESALES')">
+                    <div class="d-flex align-items-center gap-2">
+                      <input class="form-check-input mt-0" type="checkbox" id="chk_TELESALES" value="E & TELESALES" onclick="event.stopPropagation(); toggleAreaSelection('E & TELESALES');">
+                      <span class="badge badge-terminal badge-telesales"><i class="fa-solid fa-headset"></i> TELESALES</span>
+                      <span class="small fw-semibold">E &amp; TELESALES</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 10.5px;">192.168.12.224</span>
+                  </div>
+
+                  <!-- E & CEASED -->
+                  <div class="area-chip-checkbox" id="areaCheck_CEASED" onclick="toggleAreaSelection('E & CEASED')">
+                    <div class="d-flex align-items-center gap-2">
+                      <input class="form-check-input mt-0" type="checkbox" id="chk_CEASED" value="E & CEASED" onclick="event.stopPropagation(); toggleAreaSelection('E & CEASED');">
+                      <span class="badge badge-terminal badge-ceased"><i class="fa-solid fa-ban"></i> CEASED</span>
+                      <span class="small fw-semibold">E &amp; CEASED</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 10.5px;">192.168.12.221</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-grid gap-2 pt-2">
+                <button class="btn btn-brand py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm" id="btnPreview" onclick="fetchPreview()">
+                  <i class="fa-solid fa-table-list"></i>
+                  <span class="fw-semibold">Preview Attendance</span>
+                </button>
+
+                <button class="btn btn-excel py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm" id="btnDownload" onclick="downloadExcel()">
+                  <i class="fa-solid fa-file-excel"></i>
+                  <span class="fw-semibold">Download Excel (.xlsx)</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- MOBILE OFFCANVAS: Filters (Small Screens < 992px)    -->
+      <!-- ==================================================== -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilterDrawer" aria-labelledby="mobileFilterDrawerLabel">
+        <div class="offcanvas-header border-bottom">
+          <h5 class="offcanvas-title d-flex align-items-center gap-2" id="mobileFilterDrawerLabel">
+            <i class="fa-solid fa-sliders text-primary"></i> Report Parameters
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3" id="mobileFilterContainer">
+          <!-- Relocated dynamically on resize -->
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- RIGHT COLUMN: Analytics, Stats, Table & Cards        -->
+      <!-- ==================================================== -->
+      <div class="col-12 col-lg-8 col-xl-9 results-card-col">
+
+        <!-- Stat KPI Cards Row -->
+        <div class="row g-2 mb-3" id="statsRow" style="display: none;">
+          <!-- 1. Total Records -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card-modern stat-card-records" onclick="setQuickStatusFilter('all')" id="statCardAll" title="Click to show all records">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="text-muted small fw-medium">Total Records</div>
+                  <h3 class="fw-bold mb-0 mt-1" id="statTotalRecords" style="color: #3b82f6;">0</h3>
+                </div>
+                <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                  <i class="fa-regular fa-calendar-check"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Present Days (IN & OUT) -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card-modern stat-card-present" onclick="setQuickStatusFilter('present')" id="statCardPresent" title="Click to filter Present only">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="text-muted small fw-medium">Present (IN &amp; OUT)</div>
+                  <h3 class="fw-bold mb-0 mt-1" id="statPresent" style="color: #10b981;">0</h3>
+                </div>
+                <div class="stat-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                  <i class="fa-solid fa-user-check"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Single Punches -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card-modern stat-card-single" onclick="setQuickStatusFilter('single')" id="statCardSingle" title="Click to filter Single Punches only">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="text-muted small fw-medium">Single Punches</div>
+                  <h3 class="fw-bold mb-0 mt-1" id="statSingle" style="color: #f59e0b;">0</h3>
+                </div>
+                <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Total Employees -->
+          <div class="col-6 col-md-3">
+            <div class="stat-card-modern stat-card-employees">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="text-muted small fw-medium">Total Employees</div>
+                  <h3 class="fw-bold mb-0 mt-1" id="statEmployees" style="color: #8b5cf6;">0</h3>
+                </div>
+                <div class="stat-icon-wrapper" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Status Filter Strip (Pills) -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 quick-filter-strip" id="quickFilterStrip" style="display: none !important;">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="small text-muted fw-semibold me-1"><i class="fa-solid fa-filter me-1"></i>Filter:</span>
+            <div class="filter-chip active" id="chipAll" onclick="setQuickStatusFilter('all')">
+              <span>All Records</span>
+              <span class="badge bg-secondary rounded-pill" id="chipBadgeAll">0</span>
+            </div>
+            <div class="filter-chip" id="chipPresent" onclick="setQuickStatusFilter('present')">
+              <i class="fa-solid fa-circle-check text-success"></i>
+              <span>Present</span>
+              <span class="badge bg-success bg-opacity-25 text-success rounded-pill" id="chipBadgePresent">0</span>
+            </div>
+            <div class="filter-chip" id="chipSingle" onclick="setQuickStatusFilter('single')">
+              <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+              <span>Single Punch</span>
+              <span class="badge bg-warning bg-opacity-25 text-warning rounded-pill" id="chipBadgeSingle">0</span>
+            </div>
+            <div class="filter-chip" id="chipAbsent" onclick="setQuickStatusFilter('absent')">
+              <i class="fa-solid fa-circle-xmark text-danger"></i>
+              <span>No Punch / Off</span>
+              <span class="badge bg-danger bg-opacity-25 text-danger rounded-pill" id="chipBadgeAbsent">0</span>
+            </div>
+          </div>
+
+          <!-- View Mode Toggle (Table View vs Card View) -->
+          <div class="btn-group btn-group-sm" role="group" aria-label="View Toggle">
+            <button type="button" class="btn btn-outline-secondary active" id="btnViewTable" onclick="switchView('table')" title="Table View">
+              <i class="fa-solid fa-table-list me-1"></i> Table
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="btnViewCards" onclick="switchView('cards')" title="Card View">
+              <i class="fa-solid fa-grip me-1"></i> Cards
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance Records Main Card -->
+        <div class="app-card">
+          <div class="app-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            
+            <!-- Left Header: Title & Badges -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <i class="fa-solid fa-clipboard-list text-primary fs-5"></i>
+              <div>
+                <span class="fw-bold" id="tableTitle">Attendance Records</span>
+                <span class="badge bg-secondary rounded-pill ms-2" id="recordCountBadge">0 Records</span>
+              </div>
+            </div>
+
+            <!-- Right Header: Live Search & Action Buttons -->
+            <div class="d-flex align-items-center gap-2 results-header-actions flex-wrap">
+              <!-- Search box inside table -->
+              <div class="input-group input-group-sm" style="width: 220px;">
+                <span class="input-group-text bg-transparent border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" id="tableFilter" class="form-control border-start-0" placeholder="Search rows..." oninput="filterTableRows()">
+              </div>
+
+              <!-- Export Tools Dropdown -->
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-share-nodes"></i> Export / Print
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                  <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" onclick="downloadExcel()">
+                      <i class="fa-solid fa-file-excel text-success"></i> Download Excel (.xlsx)
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" onclick="copyTableToClipboard()">
+                      <i class="fa-regular fa-copy text-primary"></i> Copy to Clipboard (TSV)
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" onclick="exportClientCSV()">
+                      <i class="fa-solid fa-file-csv text-info"></i> Download Quick CSV
+                    </button>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2" onclick="window.print()">
+                      <i class="fa-solid fa-print text-muted"></i> Print Attendance Sheet
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+
+            <!-- Loading Spinner State -->
+            <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+              <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <h6 class="mt-3 fw-bold text-main">Fetching Biometric Punches...</h6>
+              <p class="text-muted small mb-0">Filtering punches from MAIN1 &amp; MAIN 2 biometric machines.</p>
+            </div>
+
+            <!-- Empty Placeholder State -->
+            <div id="emptyState" class="text-center py-5 px-3">
+              <div class="mb-3">
+                <i class="fa-regular fa-calendar-xmark fa-3x text-muted opacity-50"></i>
+              </div>
+              <h5 class="fw-bold text-main">No Records Displayed</h5>
+              <p class="text-muted small mx-auto" style="max-width: 420px;">
+                Choose an employee and date range using the filters, then click <b>"Preview Attendance"</b> or click <b>"Today's Live"</b> above.
+              </p>
+              <button class="btn btn-sm btn-brand px-3 mt-1" onclick="quickTodayAttendance()">
+                <i class="fa-solid fa-bolt me-1 text-warning"></i> View Today's Attendance
+              </button>
+            </div>
+
+            <!-- Table View Container -->
+            <div class="table-responsive-custom" id="tableContainer" style="display: none;">
+              <table class="table table-modern table-hover" id="attendanceTable">
+                <thead>
+                  <tr>
+                    <th onclick="sortTable('emp_code')">Emp Code <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th onclick="sortTable('name')">Employee Name <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th onclick="sortTable('date')">Date &amp; Day <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th>Status</th>
+                    <th onclick="sortTable('in_time')">IN Time <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th onclick="sortTable('out_time')">OUT Time <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th>Machine (IN / OUT)</th>
+                    <th onclick="sortTable('duration_minutes')">Duration <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                    <th onclick="sortTable('total_punches')" class="text-center">Punches <i class="fa-solid fa-sort ms-1 small text-muted"></i></th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+
+            <!-- Mobile Card View Container -->
+            <div id="cardsContainer" class="p-3" style="display: none;">
+              <div class="row g-2" id="cardsGrid"></div>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2 pagination-container" id="paginationBar" style="display: none;">
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Rows per page:</span>
+                <select class="form-select form-select-sm" id="pageSizeSelect" style="width: 80px;" onchange="changePageSize()">
+                  <option value="25" selected>25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                  <option value="all">All</option>
+                </select>
+                <span class="text-muted small ms-2" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
+              </div>
+              <ul class="pagination pagination-sm mb-0" id="paginationNav"></ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Floating Action Bar (Visible only on mobile < 992px) -->
+  <div class="mobile-bottom-bar d-lg-none" id="mobileBottomBar">
+    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 flex-fill justify-content-center" data-bs-toggle="offcanvas" data-bs-target="#mobileFilterDrawer">
+      <i class="fa-solid fa-sliders"></i>
+      <span>Filters</span>
+    </button>
+    <button class="btn btn-sm btn-brand d-flex align-items-center gap-1 flex-fill justify-content-center" onclick="fetchPreview()">
+      <i class="fa-solid fa-table-list"></i>
+      <span>Preview</span>
+    </button>
+    <button class="btn btn-sm btn-excel d-flex align-items-center gap-1 flex-fill justify-content-center" onclick="downloadExcel()">
+      <i class="fa-solid fa-file-excel"></i>
+      <span>Excel</span>
+    </button>
+  </div>
+
+  <!-- Floating Toast Notifications -->
+  <div class="app-toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // State variables
+    let allEmployees = [];
+    let selectedEmpCode = null;
+    let selectedAreas = ['MAIN1', 'MAIN 2']; // Default active machines
+    let currentRawRecords = [];
+    let processedRecords = [];
+    let filteredRecords = [];
+    let currentStatusFilter = 'all'; // 'all', 'present', 'single', 'absent'
+    let currentViewMode = window.innerWidth < 768 ? 'cards' : 'table';
+    
+    // Pagination & Sorting state
+    let currentPage = 1;
+    let pageSize = 25;
+    let sortColumn = 'date';
+    let sortDirection = 'asc';
+
+    // Base URL resolution for direct port 8083 or nginx reverse proxy /attendance/
+    const BASE_PATH = window.location.pathname.endsWith('/') 
+      ? window.location.pathname.slice(0, -1) 
+      : window.location.pathname;
+
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      repositionFilterForm();
+      initDates();
+      loadStatus();
+      loadEmployees();
+      syncAreaCheckboxesUI();
+
+      // Set initial view toggle button
+      if (currentViewMode === 'cards') {
+        document.getElementById('btnViewTable')?.classList.remove('active');
+        document.getElementById('btnViewCards')?.classList.add('active');
+      }
+    });
+
+    // Handle screen resize to move the single form between Desktop Sidebar and Mobile Offcanvas
+    function repositionFilterForm() {
+      const form = document.getElementById('filterFormContent');
+      const desktopTarget = document.getElementById('desktopFilterContainer');
+      const mobileTarget = document.getElementById('mobileFilterContainer');
+      if (!form || !desktopTarget || !mobileTarget) return;
+
+      if (window.innerWidth < 992) {
+        if (mobileTarget.firstElementChild !== form) {
+          mobileTarget.appendChild(form);
+        }
+      } else {
+        if (desktopTarget.firstElementChild !== form) {
+          desktopTarget.appendChild(form);
+        }
+        const mobileDrawer = document.getElementById('mobileFilterDrawer');
+        const instance = bootstrap.Offcanvas.getInstance(mobileDrawer);
+        if (instance) instance.hide();
+      }
+    }
+    window.addEventListener('resize', repositionFilterForm);
+
+    // Theme Management (Light / Dark)
+    function initTheme() {
+      const saved = localStorage.getItem('easywdms_theme') || 'light';
+      document.documentElement.setAttribute('data-bs-theme', saved);
+      updateThemeButtonIcon(saved);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-bs-theme', next);
+      localStorage.setItem('easywdms_theme', next);
+      updateThemeButtonIcon(next);
+    }
+
+    function updateThemeButtonIcon(theme) {
+      const btn = document.getElementById('themeToggleBtn');
+      if (!btn) return;
+      btn.innerHTML = theme === 'dark' 
+        ? '<i class="fa-solid fa-sun text-warning"></i>' 
+        : '<i class="fa-solid fa-moon"></i>';
+    }
+
+    // Initialize Default Dates (Current Month and Today)
+    function initDates() {
+      const now = new Date();
+      const yr = now.getFullYear();
+      const mo = String(now.getMonth() + 1).padStart(2, '0');
+      const da = String(now.getDate()).padStart(2, '0');
+
+      const monthInput = document.getElementById('monthInput');
+      const fromInput = document.getElementById('fromDateInput');
+      const toInput = document.getElementById('toDateInput');
+
+      if (monthInput) monthInput.value = `${yr}-${mo}`;
+      if (fromInput) fromInput.value = `${yr}-${mo}-01`;
+      if (toInput) toInput.value = `${yr}-${mo}-${da}`;
+    }
+
+    // Date Presets
+    function setPresetDate(type) {
+      const now = new Date();
+      const yr = now.getFullYear();
+      const mo = String(now.getMonth() + 1).padStart(2, '0');
+      const da = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${yr}-${mo}-${da}`;
+
+      const fromInput = document.getElementById('fromDateInput');
+      const toInput = document.getElementById('toDateInput');
+      const monthInput = document.getElementById('monthInput');
+
+      // Switch to custom range tab if selecting range presets
+      if (type === 'today' || type === 'yesterday' || type === 'last7') {
+        const tabTrigger = document.getElementById('range-tab');
+        if (tabTrigger) bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+      }
+
+      if (type === 'today') {
+        if (fromInput) fromInput.value = todayStr;
+        if (toInput) toInput.value = todayStr;
+      } else if (type === 'yesterday') {
+        const yest = new Date(now);
+        yest.setDate(yest.getDate() - 1);
+        const yStr = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, '0')}-${String(yest.getDate()).padStart(2, '0')}`;
+        if (fromInput) fromInput.value = yStr;
+        if (toInput) toInput.value = yStr;
+      } else if (type === 'last7') {
+        const past = new Date(now);
+        past.setDate(past.getDate() - 6);
+        const pStr = `${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}-${String(past.getDate()).padStart(2, '0')}`;
+        if (fromInput) fromInput.value = pStr;
+        if (toInput) toInput.value = todayStr;
+      } else if (type === 'thisMonth') {
+        const tabTrigger = document.getElementById('month-tab');
+        if (tabTrigger) bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+        if (monthInput) monthInput.value = `${yr}-${mo}`;
+      } else if (type === 'lastMonth') {
+        const tabTrigger = document.getElementById('month-tab');
+        if (tabTrigger) bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+        const prevM = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const pYr = prevM.getFullYear();
+        const pMo = String(prevM.getMonth() + 1).padStart(2, '0');
+        if (monthInput) monthInput.value = `${pYr}-${pMo}`;
+      }
+    }
+
+    function stepMonth(delta) {
+      const monthInput = document.getElementById('monthInput');
+      if (!monthInput || !monthInput.value) return;
+      const [yr, mo] = monthInput.value.split('-').map(Number);
+      const dt = new Date(yr, mo - 1 + delta, 1);
+      const newYr = dt.getFullYear();
+      const newMo = String(dt.getMonth() + 1).padStart(2, '0');
+      monthInput.value = `${newYr}-${newMo}`;
+    }
+
+    // Toggle Employee Mode: Single vs All
+    function toggleEmpMode() {
+      const modeSingle = document.getElementById('modeSingle')?.checked;
+      const container = document.getElementById('singleEmpContainer');
+      if (container) {
+        container.style.display = modeSingle ? 'block' : 'none';
+      }
+    }
+
+    // Toggle Area / Machine Selection
+    function toggleAreaSelection(code) {
+      const idx = selectedAreas.indexOf(code);
+      if (idx > -1) {
+        if (selectedAreas.length === 1) {
+          showToast('At least one area / machine must be selected', 'warning');
+          return;
+        }
+        selectedAreas.splice(idx, 1);
+      } else {
+        selectedAreas.push(code);
+      }
+      syncAreaCheckboxesUI();
+    }
+
+    // Area Quick Presets
+    function setAreaPreset(preset) {
+      if (preset === 'main') {
+        selectedAreas = ['MAIN1', 'MAIN 2'];
+      } else if (preset === 'all') {
+        selectedAreas = ['MAIN1', 'MAIN 2', 'E & TELESALES', 'E & CEASED'];
+      } else if (preset === 'telesales') {
+        selectedAreas = ['E & TELESALES'];
+      } else if (preset === 'ceased') {
+        selectedAreas = ['E & CEASED'];
+      }
+      syncAreaCheckboxesUI();
+    }
+
+    // Synchronize UI Checkboxes with selectedAreas
+    function syncAreaCheckboxesUI() {
+      const allCodes = ['MAIN1', 'MAIN 2', 'E & TELESALES', 'E & CEASED'];
+      const chkMap = {
+        'MAIN1': { id: 'chk_MAIN1', card: 'areaCheck_MAIN1' },
+        'MAIN 2': { id: 'chk_MAIN2', card: 'areaCheck_MAIN2' },
+        'E & TELESALES': { id: 'chk_TELESALES', card: 'areaCheck_TELESALES' },
+        'E & CEASED': { id: 'chk_CEASED', card: 'areaCheck_CEASED' }
+      };
+
+      allCodes.forEach(code => {
+        const item = chkMap[code];
+        const isSelected = selectedAreas.includes(code);
+        const chk = document.getElementById(item.id);
+        const card = document.getElementById(item.card);
+        if (chk) chk.checked = isSelected;
+        if (card) card.classList.toggle('selected', isSelected);
+      });
+
+      const countEl = document.getElementById('areaSelectedCount');
+      if (countEl) countEl.innerText = `${selectedAreas.length} of 4 selected`;
+      updateBannerMachinesText();
+    }
+
+    function updateBannerMachinesText() {
+      const banner = document.getElementById('bannerActiveMachines');
+      if (!banner) return;
+      if (selectedAreas.length === 0) {
+        banner.innerHTML = '<span class="text-danger small">None selected</span>';
+        return;
+      }
+      const badges = selectedAreas.map(a => renderTerminalBadge(a)).join(' ');
+      banner.innerHTML = badges;
+    }
+
+    // Load Connection Status from Backend
+    function loadStatus() {
+      fetch(`${BASE_PATH}/api/status`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'connected') {
+            document.getElementById('navCompany').innerText = d.company || 'CMSAE NEW';
+            document.getElementById('navLiveDot').style.display = 'inline-block';
+          } else {
+            document.getElementById('navCompany').innerText = 'Offline';
+            document.getElementById('navLiveDot').style.display = 'none';
+          }
+        })
+        .catch(err => {
+          console.warn('Status ping failed:', err);
+          document.getElementById('navCompany').innerText = 'Disconnected';
+        });
+    }
+
+    // Load Employees List from Backend
+    function loadEmployees(force = false) {
+      const countEl = document.getElementById('empCountText');
+      if (countEl) countEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Syncing...';
+
+      const url = force ? `${BASE_PATH}/api/employees?refresh=true` : `${BASE_PATH}/api/employees`;
+      fetch(url)
+        .then(r => r.json())
+        .then(d => {
+          if (d.success && d.employees && d.employees.length > 0) {
+            allEmployees = d.employees;
+            if (!selectedEmpCode && allEmployees.length > 0) {
+              selectedEmpCode = allEmployees[0].emp_code;
+            }
+            renderEmployeeList();
+            if (countEl) countEl.innerHTML = `<i class="fa-solid fa-check text-success me-1"></i> ${allEmployees.length} employees`;
+            updateSelectedEmpLabel();
+          } else {
+            showToast('Failed to load employee list: ' + (d.error || 'Empty response'), 'danger');
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching employees:', err);
+          showToast('Network error loading employees: ' + err, 'danger');
+        });
+    }
+
+    // Render the Employee List in custom box
+    function renderEmployeeList() {
+      const searchInput = document.getElementById('empSearch');
+      const query = (searchInput?.value || '').toLowerCase().trim();
+      const container = document.getElementById('empListContainer');
+      if (!container) return;
+
+      const filtered = query 
+        ? allEmployees.filter(e => 
+            e.emp_code.toLowerCase().includes(query) || 
+            e.name.toLowerCase().includes(query) || 
+            (e.department && e.department.toLowerCase().includes(query)))
+        : allEmployees;
+
+      container.innerHTML = '';
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="p-3 text-center text-muted small">No matching employees found</div>';
+        return;
+      }
+
+      filtered.forEach(emp => {
+        const item = document.createElement('div');
+        item.className = `emp-list-item ${emp.emp_code === selectedEmpCode ? 'selected' : ''}`;
+        item.onclick = () => selectEmployee(emp.emp_code);
+
+        const initial = (emp.name || emp.emp_code || '?').charAt(0).toUpperCase();
+        item.innerHTML = `
+          <div class="emp-avatar">${initial}</div>
+          <div class="flex-grow-1 text-truncate">
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge bg-secondary-subtle text-secondary-emphasis font-monospace" style="font-size: 11px;">#${emp.emp_code}</span>
+              <span class="fw-semibold small text-truncate">${escapeHtml(emp.name)}</span>
+            </div>
+            <div class="text-muted" style="font-size: 11px;">${escapeHtml(emp.department || '-')}</div>
+          </div>
+          ${emp.emp_code === selectedEmpCode ? '<i class="fa-solid fa-check text-primary small"></i>' : ''}
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function selectEmployee(code) {
+      selectedEmpCode = code;
+      renderEmployeeList();
+      updateSelectedEmpLabel();
+    }
+
+    function updateSelectedEmpLabel() {
+      const emp = allEmployees.find(e => e.emp_code === selectedEmpCode);
+      const text = emp ? `[${emp.emp_code}] ${emp.name}` : 'None selected';
+      const el = document.getElementById('selectedEmpText');
+      if (el) el.innerText = text;
+    }
+
+    function filterEmployeeList() {
+      renderEmployeeList();
+    }
+
+    function clearEmpSearch() {
+      const input = document.getElementById('empSearch');
+      if (input) input.value = '';
+      renderEmployeeList();
+    }
+
+    // Calculate In/Out duration string (e.g. "9h 44m") and duration in minutes for sorting
+    function calculateDuration(inStr, outStr) {
+      if (!inStr || !outStr || inStr === '---' || outStr === '---') {
+        return { text: '---', minutes: 0 };
+      }
+      try {
+        const [h1, m1, s1] = inStr.split(':').map(Number);
+        const [h2, m2, s2] = outStr.split(':').map(Number);
+        let diffSec = (h2 * 3600 + m2 * 60 + s2) - (h1 * 3600 + m1 * 60 + s1);
+        if (diffSec < 0) diffSec += 24 * 3600; // Overnight handling
+        
+        const hours = Math.floor(diffSec / 3600);
+        const mins = Math.floor((diffSec % 3600) / 60);
+        return {
+          text: `${hours}h ${mins}m`,
+          minutes: Math.floor(diffSec / 60)
+        };
+      } catch (e) {
+        return { text: '---', minutes: 0 };
+      }
+    }
+
+    // Determine status badge info
+    function getStatusInfo(record) {
+      const punches = record.total_punches || 0;
+      const isSun = record.day === 'Sunday';
+
+      if (punches === 0) {
+        return isSun 
+          ? { label: 'Sunday / Off', class: 'status-weekend', icon: 'fa-regular fa-calendar' }
+          : { label: 'No Punch / Absent', class: 'status-absent', icon: 'fa-solid fa-circle-xmark' };
+      }
+
+      if (punches === 1) {
+        return { label: 'Single Punch', class: 'status-single', icon: 'fa-solid fa-triangle-exclamation' };
+      }
+
+      // 2 or more punches -> Full Day or Half Day
+      const dur = calculateDuration(record.in_time, record.out_time);
+      if (dur.minutes >= 480) { // >= 8 hours
+        return { label: 'Full Day', class: 'status-present', icon: 'fa-solid fa-circle-check' };
+      } else if (dur.minutes >= 240) { // >= 4 hours
+        return { label: 'Half Day', class: 'status-present', icon: 'fa-solid fa-circle-check' };
+      } else {
+        return { label: 'Present', class: 'status-present', icon: 'fa-solid fa-circle-check' };
+      }
+    }
+
+    // Get Active Date Range from Form
+    function getSelectedDateRange() {
+      const activeTab = document.querySelector('#dateTabs button.active')?.id || 'month-tab';
+      if (activeTab === 'month-tab') {
+        const monthVal = document.getElementById('monthInput')?.value;
+        if (!monthVal) {
+          showToast('Please select a valid month', 'warning');
+          return null;
+        }
+        const [yr, mo] = monthVal.split('-').map(Number);
+        const startDate = `${monthVal}-01`;
+        const lastDay = new Date(yr, mo, 0).getDate();
+        const endDate = `${monthVal}-${String(lastDay).padStart(2, '0')}`;
+        return { startDate, endDate, label: `Month of ${monthVal}` };
+      } else {
+        const startDate = document.getElementById('fromDateInput')?.value;
+        const endDate = document.getElementById('toDateInput')?.value;
+        if (!startDate || !endDate) {
+          showToast('Please select both From and To dates', 'warning');
+          return null;
+        }
+        if (startDate > endDate) {
+          showToast('From Date cannot be after To Date', 'warning');
+          return null;
+        }
+        return { startDate, endDate, label: `${startDate} to ${endDate}` };
+      }
+    }
+
+    // Quick 1-Click Today's Attendance
+    function quickTodayAttendance() {
+      setPresetDate('today');
+      fetchPreview();
+    }
+
+    // Fetch Preview Records from Backend
+    function fetchPreview() {
+      const range = getSelectedDateRange();
+      if (!range) return;
+
+      const isSingle = document.getElementById('modeSingle')?.checked;
+      let empCode = null;
+      let empName = "All Employees";
+
+      if (isSingle) {
+        if (!selectedEmpCode) {
+          showToast('Please select an employee from the list', 'warning');
+          return;
+        }
+        empCode = selectedEmpCode;
+        const empObj = allEmployees.find(e => e.emp_code === selectedEmpCode);
+        empName = empObj ? `[${empObj.emp_code}] ${empObj.name}` : `Employee #${empCode}`;
+      }
+
+      // Close mobile offcanvas if open
+      const offcanvasEl = document.getElementById('mobileFilterDrawer');
+      const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+      if (offcanvasInstance) offcanvasInstance.hide();
+
+      // Set UI states
+      document.getElementById('loadingSpinner').style.display = 'block';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('tableContainer').style.display = 'none';
+      document.getElementById('cardsContainer').style.display = 'none';
+      document.getElementById('statsRow').style.display = 'none';
+      document.getElementById('paginationBar').style.display = 'none';
+      document.getElementById('quickFilterStrip').style.setProperty('display', 'none', 'important');
+
+      fetch(`${BASE_PATH}/api/preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emp_code: empCode,
+          start_date: range.startDate,
+          end_date: range.endDate,
+          areas: selectedAreas
+        })
+      })
+      .then(r => r.json())
+      .then(res => {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        if (!res.success) {
+          showToast("Error: " + (res.error || "Failed to fetch attendance"), 'danger');
+          document.getElementById('emptyState').style.display = 'block';
+          return;
+        }
+
+        currentRawRecords = res.records || [];
+        
+        // Enrich records with duration and status details for instant sorting and filtering
+        processedRecords = currentRawRecords.map(r => {
+          const dur = calculateDuration(r.in_time, r.out_time);
+          const st = getStatusInfo(r);
+          return {
+            ...r,
+            duration_text: dur.text,
+            duration_minutes: dur.minutes,
+            status_label: st.label,
+            status_class: st.class,
+            status_icon: st.icon
+          };
+        });
+
+        // Set KPI Stats
+        const st = res.stats || {};
+        document.getElementById('statTotalRecords').innerText = (st.total_records || processedRecords.length).toLocaleString();
+        document.getElementById('statPresent').innerText = (st.present_days || 0).toLocaleString();
+        document.getElementById('statSingle').innerText = (st.single_punch_days || 0).toLocaleString();
+        document.getElementById('statEmployees').innerText = (st.employees_count || 1).toLocaleString();
+        
+        document.getElementById('statsRow').style.display = 'flex';
+        document.getElementById('quickFilterStrip').style.setProperty('display', 'flex', 'important');
+
+        // Update Quick Filter Chip Badges
+        updateFilterChipBadges();
+
+        document.getElementById('tableTitle').innerText = `${empName} (${range.label})`;
+
+        // Apply filters & render
+        applyFiltersAndRender();
+        showToast(`Loaded ${processedRecords.length} records successfully`, 'success');
+      })
+      .catch(err => {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'block';
+        showToast("Communication error with server: " + err, 'danger');
+      });
+    }
+
+    // Quick Status Filter
+    function setQuickStatusFilter(type) {
+      currentStatusFilter = type;
+      
+      // Update visual active state on chips
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      const activeChip = document.getElementById(`chip${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      if (activeChip) activeChip.classList.add('active');
+
+      // Update stat cards highlight
+      document.querySelectorAll('.stat-card-modern').forEach(c => c.classList.remove('active-filter'));
+      if (type === 'all') document.getElementById('statCardAll')?.classList.add('active-filter');
+      if (type === 'present') document.getElementById('statCardPresent')?.classList.add('active-filter');
+      if (type === 'single') document.getElementById('statCardSingle')?.classList.add('active-filter');
+
+      currentPage = 1;
+      applyFiltersAndRender();
+    }
+
+    function updateFilterChipBadges() {
+      const total = processedRecords.length;
+      let presentCount = 0;
+      let singleCount = 0;
+      let absentCount = 0;
+
+      processedRecords.forEach(r => {
+        if (r.total_punches > 1) presentCount++;
+        else if (r.total_punches === 1) singleCount++;
+        else absentCount++;
+      });
+
+      document.getElementById('chipBadgeAll').innerText = total;
+      document.getElementById('chipBadgePresent').innerText = presentCount;
+      document.getElementById('chipBadgeSingle').innerText = singleCount;
+      document.getElementById('chipBadgeAbsent').innerText = absentCount;
+    }
+
+    // Apply Filters, Search & Sorting
+    function applyFiltersAndRender() {
+      const search = (document.getElementById('tableFilter')?.value || '').toLowerCase().trim();
+
+      filteredRecords = processedRecords.filter(r => {
+        // Status filter
+        if (currentStatusFilter === 'present' && r.total_punches <= 1) return false;
+        if (currentStatusFilter === 'single' && r.total_punches !== 1) return false;
+        if (currentStatusFilter === 'absent' && r.total_punches !== 0) return false;
+
+        // Search filter
+        if (search) {
+          const match = 
+            r.emp_code.toLowerCase().includes(search) ||
+            r.name.toLowerCase().includes(search) ||
+            r.date.toLowerCase().includes(search) ||
+            r.day.toLowerCase().includes(search) ||
+            (r.in_terminal && r.in_terminal.toLowerCase().includes(search)) ||
+            (r.out_terminal && r.out_terminal.toLowerCase().includes(search)) ||
+            (r.department && r.department.toLowerCase().includes(search));
+          if (!match) return false;
+        }
+
+        return true;
+      });
+
+      // Sort records
+      sortRecordsList(filteredRecords);
+
+      // Update count badge
+      document.getElementById('recordCountBadge').innerText = `${filteredRecords.length} Records`;
+
+      if (filteredRecords.length === 0) {
+        document.getElementById('emptyState').innerHTML = `
+          <i class="fa-regular fa-calendar-xmark fa-3x text-muted mb-3 opacity-50"></i>
+          <h5 class="fw-semibold text-main">No Records Found</h5>
+          <p class="text-muted small">No punch data matches the selected criteria on MAIN1 / MAIN 2.</p>
+        `;
+        document.getElementById('emptyState').style.display = 'block';
+        document.getElementById('tableContainer').style.display = 'none';
+        document.getElementById('cardsContainer').style.display = 'none';
+        document.getElementById('paginationBar').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('emptyState').style.display = 'none';
+      if (currentViewMode === 'table') {
+        document.getElementById('tableContainer').style.display = 'block';
+        document.getElementById('cardsContainer').style.display = 'none';
+        renderTableRows();
+      } else {
+        document.getElementById('tableContainer').style.display = 'none';
+        document.getElementById('cardsContainer').style.display = 'block';
+        renderCardRows();
+      }
+
+      renderPagination();
+    }
+
+    // Table Sorting
+    function sortTable(col) {
+      if (sortColumn === col) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = col;
+        sortDirection = 'asc';
+      }
+      applyFiltersAndRender();
+    }
+
+    function sortRecordsList(records) {
+      records.sort((a, b) => {
+        let vA = a[sortColumn];
+        let vB = b[sortColumn];
+
+        if (typeof vA === 'string') vA = vA.toLowerCase();
+        if (typeof vB === 'string') vB = vB.toLowerCase();
+
+        if (vA < vB) return sortDirection === 'asc' ? -1 : 1;
+        if (vA > vB) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    // Render Table Rows (Paged)
+    function renderTableRows() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      const startIndex = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
+      const endIndex = pageSize === 'all' ? filteredRecords.length : Math.min(startIndex + pageSize, filteredRecords.length);
+      const pageData = filteredRecords.slice(startIndex, endIndex);
+
+      pageData.forEach(r => {
+        const tr = document.createElement('tr');
+        
+        const inClass = r.in_time && r.in_time !== '---' ? 'time-in' : 'text-muted';
+        const outClass = r.out_time && r.out_time !== '---' ? 'time-out' : 'text-muted';
+
+        const inBadge = renderTerminalBadge(r.in_terminal);
+        const outBadge = renderTerminalBadge(r.out_terminal);
+
+        tr.innerHTML = `
+          <td class="font-monospace fw-bold">#${escapeHtml(r.emp_code)}</td>
+          <td>
+            <div class="fw-semibold text-truncate" style="max-width: 170px;">${escapeHtml(r.name)}</div>
+            <div class="text-muted small">${escapeHtml(r.department || '-')}</div>
+          </td>
+          <td>
+            <div class="fw-semibold">${r.date}</div>
+            <div class="text-muted small">${r.day}</div>
+          </td>
+          <td>
+            <span class="badge-status ${r.status_class}">
+              <i class="${r.status_icon}"></i> ${r.status_label}
+            </span>
+          </td>
+          <td class="time-cell ${inClass}">
+            <div class="d-flex align-items-center gap-1">
+              <i class="fa-solid fa-arrow-right-to-bracket text-success small"></i>
+              <span>${r.in_time}</span>
+            </div>
+          </td>
+          <td class="time-cell ${outClass}">
+            <div class="d-flex align-items-center gap-1">
+              <i class="fa-solid fa-arrow-right-from-bracket text-primary small"></i>
+              <span>${r.out_time}</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center gap-1">
+              ${inBadge}
+              <span class="text-muted small">/</span>
+              ${outBadge}
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-light text-dark border font-monospace px-2 py-1">${r.duration_text}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">${r.total_punches}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render Cards for Mobile View
+    function renderCardRows() {
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
+
+      const startIndex = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
+      const endIndex = pageSize === 'all' ? filteredRecords.length : Math.min(startIndex + pageSize, filteredRecords.length);
+      const pageData = filteredRecords.slice(startIndex, endIndex);
+
+      pageData.forEach(r => {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-md-6';
+
+        col.innerHTML = `
+          <div class="attendance-card-mobile">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold">${r.date}</span>
+                <span class="badge bg-light text-dark border small">${r.day}</span>
+              </div>
+              <span class="badge-status ${r.status_class}">
+                <i class="${r.status_icon}"></i> ${r.status_label}
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="emp-avatar" style="width: 28px; height: 28px; font-size: 11px;">
+                ${(r.name || '?').charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <span class="fw-semibold">${escapeHtml(r.name)}</span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis font-monospace ms-1">#${r.emp_code}</span>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <div class="punch-pill-box">
+                  <div class="text-muted small" style="font-size: 10.5px;">FIRST IN</div>
+                  <div class="time-cell time-in fs-6 mt-1">${r.in_time}</div>
+                  <div class="mt-1">${renderTerminalBadge(r.in_terminal)}</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="punch-pill-box">
+                  <div class="text-muted small" style="font-size: 10.5px;">LAST OUT</div>
+                  <div class="time-cell time-out fs-6 mt-1">${r.out_time}</div>
+                  <div class="mt-1">${renderTerminalBadge(r.out_terminal)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between pt-1 border-top text-muted small">
+              <span>Duration: <b class="text-main font-monospace">${r.duration_text}</b></span>
+              <span>Punches: <span class="badge bg-secondary-subtle text-secondary-emphasis">${r.total_punches}</span></span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(col);
+      });
+    }
+
+    function renderTerminalBadge(term) {
+      if (!term || term === '---' || term === '-') {
+        return '<span class="text-muted small">---</span>';
+      }
+      const tUpper = term.toUpperCase();
+      if (tUpper.includes('MAIN 2')) {
+        return `<span class="badge badge-terminal badge-main2"><i class="fa-solid fa-fingerprint"></i> MAIN 2</span>`;
+      } else if (tUpper.includes('MAIN1') || tUpper.includes('MAIN')) {
+        return `<span class="badge badge-terminal badge-main1"><i class="fa-solid fa-fingerprint"></i> MAIN1</span>`;
+      } else if (tUpper.includes('TELESALES')) {
+        return `<span class="badge badge-terminal badge-telesales"><i class="fa-solid fa-headset"></i> TELESALES</span>`;
+      } else if (tUpper.includes('CEASED')) {
+        return `<span class="badge badge-terminal badge-ceased"><i class="fa-solid fa-ban"></i> CEASED</span>`;
+      }
+      return `<span class="badge bg-light text-dark border badge-terminal">${escapeHtml(term)}</span>`;
+    }
+
+    // Pagination Controls
+    function renderPagination() {
+      const container = document.getElementById('paginationBar');
+      if (filteredRecords.length <= 25 && pageSize === 25) {
+        container.style.display = 'none';
+        return;
+      }
+      container.style.display = 'flex';
+
+      const total = filteredRecords.length;
+      const totalPages = pageSize === 'all' ? 1 : Math.ceil(total / pageSize);
+      const start = pageSize === 'all' ? 1 : (currentPage - 1) * pageSize + 1;
+      const end = pageSize === 'all' ? total : Math.min(currentPage * pageSize, total);
+
+      document.getElementById('paginationInfo').innerText = `Showing ${start} to ${end} of ${total} entries`;
+
+      const nav = document.getElementById('paginationNav');
+      nav.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      // Prev Button
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+      prevLi.innerHTML = `<button class="page-link" onclick="goToPage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></button>`;
+      nav.appendChild(prevLi);
+
+      // Page Numbers (max 5 visible)
+      let startP = Math.max(1, currentPage - 2);
+      let endP = Math.min(totalPages, startP + 4);
+      if (endP - startP < 4) startP = Math.max(1, endP - 4);
+
+      for (let p = startP; p <= endP; p++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${p === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<button class="page-link" onclick="goToPage(${p})">${p}</button>`;
+        nav.appendChild(li);
+      }
+
+      // Next Button
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+      nextLi.innerHTML = `<button class="page-link" onclick="goToPage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></button>`;
+      nav.appendChild(nextLi);
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      if (currentViewMode === 'table') renderTableRows();
+      else renderCardRows();
+      renderPagination();
+      document.getElementById('tableContainer')?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changePageSize() {
+      const val = document.getElementById('pageSizeSelect').value;
+      pageSize = val === 'all' ? 'all' : parseInt(val, 10);
+      currentPage = 1;
+      applyFiltersAndRender();
+    }
+
+    function switchView(mode) {
+      currentViewMode = mode;
+      document.getElementById('btnViewTable')?.classList.toggle('active', mode === 'table');
+      document.getElementById('btnViewCards')?.classList.toggle('active', mode === 'cards');
+      applyFiltersAndRender();
+    }
+
+    function filterTableRows() {
+      currentPage = 1;
+      applyFiltersAndRender();
+    }
+
+    // Download Official Excel Report (.xlsx)
+    function downloadExcel() {
+      const range = getSelectedDateRange();
+      if (!range) return;
+
+      const isSingle = document.getElementById('modeSingle')?.checked;
+      const areasParam = selectedAreas && selectedAreas.length > 0 ? `&areas=${encodeURIComponent(selectedAreas.join(','))}` : '';
+      let url = `${BASE_PATH}/api/export?start_date=${encodeURIComponent(range.startDate)}&end_date=${encodeURIComponent(range.endDate)}${areasParam}`;
+
+      if (isSingle) {
+        if (!selectedEmpCode) {
+          showToast('Please select an employee first', 'warning');
+          return;
+        }
+        url += `&emp_code=${encodeURIComponent(selectedEmpCode)}`;
+      } else {
+        url += `&all=true`;
+      }
+
+      showToast('Generating Excel report (.xlsx)...', 'info');
+      window.location.href = url;
+    }
+
+    // Copy Table Data as TSV (Tab Separated Values) for Excel / WhatsApp
+    function copyTableToClipboard() {
+      if (!filteredRecords || filteredRecords.length === 0) {
+        showToast('No records to copy', 'warning');
+        return;
+      }
+
+      const headers = ['Emp Code', 'Employee Name', 'Department', 'Date', 'Day', 'IN Time', 'OUT Time', 'IN Machine', 'OUT Machine', 'Duration', 'Punches'];
+      const rows = filteredRecords.map(r => [
+        r.emp_code,
+        r.name,
+        r.department || '-',
+        r.date,
+        r.day,
+        r.in_time,
+        r.out_time,
+        r.in_terminal,
+        r.out_terminal,
+        r.duration_text,
+        r.total_punches
+      ].join('\t'));
+
+      const tsv = [headers.join('\t'), ...rows].join('\n');
+
+      navigator.clipboard.writeText(tsv).then(() => {
+        showToast(`Copied ${filteredRecords.length} rows to clipboard!`, 'success');
+      }).catch(err => {
+        showToast('Clipboard copy failed: ' + err, 'danger');
+      });
+    }
+
+    // Client-side quick CSV Export
+    function exportClientCSV() {
+      if (!filteredRecords || filteredRecords.length === 0) {
+        showToast('No records to export', 'warning');
+        return;
+      }
+
+      const headers = ['Emp Code', 'Employee Name', 'Department', 'Date', 'Day', 'IN Time', 'OUT Time', 'IN Machine', 'OUT Machine', 'Duration', 'Punches'];
+      const rows = filteredRecords.map(r => [
+        `"${r.emp_code}"`,
+        `"${r.name}"`,
+        `"${r.department || '-'}"`,
+        `"${r.date}"`,
+        `"${r.day}"`,
+        `"${r.in_time}"`,
+        `"${r.out_time}"`,
+        `"${r.in_terminal}"`,
+        `"${r.out_terminal}"`,
+        `"${r.duration_text}"`,
+        r.total_punches
+      ].join(','));
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `attendance_export_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV downloaded successfully', 'success');
+    }
+
+    // Reset Filters
+    function resetFilters() {
+      const modeSingle = document.getElementById('modeSingle');
+      if (modeSingle) modeSingle.checked = true;
+      toggleEmpMode();
+      setAreaPreset('main');
+      initDates();
+      clearEmpSearch();
+      if (allEmployees.length > 0) {
+        selectEmployee(allEmployees[0].emp_code);
+      }
+    }
+
+    // Toast Notification Helper
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'app-toast';
+
+      let icon = 'fa-solid fa-circle-info text-info';
+      if (type === 'success') icon = 'fa-solid fa-circle-check text-success';
+      if (type === 'warning') icon = 'fa-solid fa-triangle-exclamation text-warning';
+      if (type === 'danger') icon = 'fa-solid fa-circle-exclamation text-danger';
+
+      toast.innerHTML = `
+        <i class="${icon} fs-5"></i>
+        <div class="flex-grow-1 small">${escapeHtml(message)}</div>
+        <button type="button" class="btn-close btn-close-sm" onclick="this.parentElement.remove()"></button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
