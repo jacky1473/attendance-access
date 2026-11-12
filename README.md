@@ -1,5 +1,6 @@
 # attendance-access
 # easyWDMS Biometric Attendance & In-Out Access Portal
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg) ![Status](https://img.shields.io/badge/status-active-success.svg) ![Auto-Update](https://img.shields.io/badge/1--click--update-supported-brightgreen.svg)
 
 A modern, responsive web dashboard and automated reporting tool for **easyWDMS biometric attendance systems**.
 Connects to easyWDMS, processes raw punch logs, calculates clean First-IN and Last-OUT attendance, calculates working duration, supports multi-area machine filtering (MAIN1, MAIN 2, Telesales, Ceased), and exports styled multi-sheet Excel reports (.xlsx).
