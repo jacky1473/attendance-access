@@ -30,6 +30,10 @@ Connects to easyWDMS, processes raw punch logs, calculates clean First-IN and La
   - **Copy TSV:** 1-click copy formatted for pasting directly into Excel, WhatsApp, or Google Sheets.
   - **Quick CSV Download:** Fast client-side CSV export.
   - **Print / PDF Sheet:** Clean print view with `@media print` styling.
+- **1-Click Self-Updating & GitHub Sync:**
+  - **Auto Update Detection:** Continuously and non-intrusively detects new commits pushed to GitHub (`main` branch).
+  - **Pulsing Update Indicator:** When an update is ready, an eye-catching pulsating update button blinks in the navbar.
+  - **User-Convenient 1-Click Update:** Users can apply updates at their convenience. 1-click pulls latest code, checks requirements, and restarts the background systemd service in 3 seconds while preserving configuration and credentials.
 - **Automated Systemd Service:** Self-recovering background service with auto-restart on boot.
 
 ---

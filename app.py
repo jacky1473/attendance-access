@@ -10,6 +10,9 @@ import re
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify, send_file
 import tempfile
+import subprocess
+import threading
+import time
 
 # Add local directory and /root to sys.path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -289,6 +292,191 @@ def api_export():
 
     except Exception as e:
         return f"Export error: {e}", 500
+
+# ==============================================================================
+# Git Version & Self-Update Engine
+# ==============================================================================
+GIT_DIR = SCRIPT_DIR if os.path.exists(os.path.join(SCRIPT_DIR, '.git')) else '/root/attendance-access'
+
+_update_cache = {
+    'last_checked': 0,
+    'data': None
+}
+
+def run_git_cmd(args, timeout=25):
+    try:
+        p = subprocess.run(
+            ['git'] + args,
+            cwd=GIT_DIR,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            timeout=timeout
+        )
+        return p.stdout.strip(), p.stderr.strip(), p.returncode
+    except Exception as e:
+        return '', str(e), 1
+
+def get_current_git_status():
+    sha, _, _ = run_git_cmd(['rev-parse', 'HEAD'])
+    short_sha, _, _ = run_git_cmd(['rev-parse', '--short', 'HEAD'])
+    branch, _, _ = run_git_cmd(['rev-parse', '--abbrev-ref', 'HEAD'])
+    last_log, _, _ = run_git_cmd(['log', '-1', '--pretty=format:%s|||%an|||%cr|||%cd'])
+
+    subject, author, date_rel, date_full = "", "", "", ""
+    if last_log:
+        parts = last_log.split('|||')
+        if len(parts) > 0: subject = parts[0]
+        if len(parts) > 1: author = parts[1]
+        if len(parts) > 2: date_rel = parts[2]
+        if len(parts) > 3: date_full = parts[3]
+
+    return {
+        'commit': sha,
+        'short_commit': short_sha or (sha[:7] if sha else 'unknown'),
+        'branch': branch or 'main',
+        'subject': subject,
+        'author': author,
+        'date_relative': date_rel,
+        'date_full': date_full
+    }
+
+def check_for_updates(force=False):
+    global _update_cache
+    now = time.time()
+
+    # 45-second cache unless forced
+    if not force and _update_cache['data'] and (now - _update_cache['last_checked'] < 45):
+        return _update_cache['data']
+
+    current = get_current_git_status()
+
+    # Fetch latest remote refs from origin/main
+    fetch_out, fetch_err, fetch_code = run_git_cmd(['fetch', 'origin', 'main'], timeout=25)
+    if fetch_code != 0:
+        result = {
+            'success': True,
+            'update_available': False,
+            'error': f"Remote check failed: {fetch_err}",
+            'current': current,
+            'commits_behind': 0,
+            'latest_commit': current['commit'],
+            'latest_short_commit': current['short_commit'],
+            'commits': [],
+            'last_checked_iso': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        return result
+
+    remote_sha, _, _ = run_git_cmd(['rev-parse', 'origin/main'])
+    remote_short_sha, _, _ = run_git_cmd(['rev-parse', '--short', 'origin/main'])
+    behind_str, _, _ = run_git_cmd(['rev-list', '--count', 'HEAD..origin/main'])
+    behind = int(behind_str or 0)
+
+    commits = []
+    if behind > 0 or (remote_sha and remote_sha != current['commit']):
+        log_out, _, _ = run_git_cmd(['log', 'HEAD..origin/main', '--pretty=format:%h|||%s|||%an|||%cr'])
+        if log_out:
+            for line in log_out.splitlines():
+                parts = line.split('|||')
+                if len(parts) >= 2:
+                    commits.append({
+                        'hash': parts[0],
+                        'subject': parts[1],
+                        'author': parts[2] if len(parts) > 2 else '',
+                        'date': parts[3] if len(parts) > 3 else ''
+                    })
+
+    update_available = (behind > 0) or (bool(remote_sha) and remote_sha != current['commit'])
+
+    result = {
+        'success': True,
+        'update_available': update_available,
+        'current': current,
+        'latest_commit': remote_sha or current['commit'],
+        'latest_short_commit': remote_short_sha or current['short_commit'],
+        'commits_behind': behind,
+        'commits': commits,
+        'last_checked_iso': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    _update_cache['last_checked'] = now
+    _update_cache['data'] = result
+    return result
+
+def schedule_service_restart():
+    """Restarts systemd service cleanly in a detached transient unit after a short delay."""
+    cmd = "sleep 1.2 && systemctl restart easywdms-gui.service"
+    try:
+        subprocess.Popen(
+            ["systemd-run", "--no-block", "/bin/bash", "-c", cmd],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception:
+        subprocess.Popen(
+            f"nohup bash -c '{cmd}' >/dev/null 2>&1 &",
+            shell=True,
+            start_new_session=True
+        )
+
+@app.route('/api/system/version')
+def api_system_version():
+    status = get_current_git_status()
+    return jsonify({
+        'success': True,
+        'version': status
+    })
+
+@app.route('/api/system/check-update')
+def api_system_check_update():
+    force = request.args.get('force') in ('true', '1')
+    info = check_for_updates(force=force)
+    return jsonify(info)
+
+@app.route('/api/system/update', methods=['POST'])
+def api_system_update():
+    global _update_cache
+    try:
+        # 1. Fetch origin main
+        out, err, code = run_git_cmd(['fetch', 'origin', 'main'], timeout=30)
+        if code != 0:
+            return jsonify({'success': False, 'error': f"Git fetch failed: {err}"}), 500
+
+        # 2. Reset hard to origin/main
+        out, err, code = run_git_cmd(['reset', '--hard', 'origin/main'], timeout=30)
+        if code != 0:
+            return jsonify({'success': False, 'error': f"Git reset failed: {err}"}), 500
+
+        # 3. Check requirements.txt if present
+        req_path = os.path.join(GIT_DIR, 'requirements.txt')
+        if os.path.exists(req_path):
+            run_git_cmd([sys.executable, '-m', 'pip', 'install', '-r', req_path, '--quiet'], timeout=60)
+
+        # Clear update cache
+        _update_cache['data'] = None
+        _update_cache['last_checked'] = 0
+
+        new_status = get_current_git_status()
+
+        # 4. Schedule service restart in background
+        schedule_service_restart()
+
+        return jsonify({
+            'success': True,
+            'message': 'System updated successfully! Service is restarting...',
+            'new_version': new_status
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/system/health')
+def api_system_health():
+    status = get_current_git_status()
+    return jsonify({
+        'status': 'ok',
+        'commit': status.get('short_commit'),
+        'timestamp': datetime.now().isoformat()
+    })
 
 if __name__ == '__main__':
     # Initialize client on startup
