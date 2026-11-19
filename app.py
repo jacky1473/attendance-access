@@ -487,6 +487,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Initial login warning: {e}")
 
-    # Listen on all interfaces on port 8083
-    print("Starting easyWDMS Web GUI on http://0.0.0.0:8083 ...")
-    app.run(host='0.0.0.0', port=8083, debug=False)
+    # Bind only to localhost (127.0.0.1) so app is securely accessed only through Nginx
+    bind_host = os.environ.get('EASYWDMS_BIND_HOST', '127.0.0.1')
+    print(f"Starting easyWDMS Web GUI on http://{bind_host}:8083 (Nginx proxy only) ...")
+    app.run(host=bind_host, port=8083, debug=False)
